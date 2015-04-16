@@ -163,7 +163,8 @@ public class SpeciesDataCollection {
                             
                             s += "<a href=\"" + dataLink.getUrl() + "\""
                                     + " class=\"rel-data-type-" + dataLink.getType().getIdentifier() + (dataType == null ? " species-data-link" : "") + "\""
-                                    + " title=\"" + speciesDataEntry.getName() +": " + dataLink.getType().getLabel(cms) + ", " + location + (dataLink.getNumYears().isEmpty() ? "" : " ("+dataLink.getNumYears()+")") + "\""
+                                    + " title=\"" + speciesDataEntry.getName() +": " + dataLink.getType().getLabel(cms) + ", " + location + (dataLink.getNumYears().isEmpty() ? "" : " ("+dataLink.getNumYears()+ " " + cms.label("label.seapop-species-data.year") + ")") + "\""
+                                    + " target=\"_blank\""
                                     + ">" + linkText + "</a>";
                             
                             if (dataType != null)
