@@ -83,6 +83,10 @@ public class SpeciesDataCollection {
         return toHtmlTableRows(cms, dataType, dataTypeTotals, null);
     }
     
+    public String toHtmlTableRows(CmsAgent cms, String dataType, List<String> dataTypeTotals, List<String> excludedDataTypes) {
+        return toHtmlTableRows(cms, dataType, dataTypeTotals, excludedDataTypes, null);
+    }
+    
     /**
      * Generates HTML table rows based on the data in this collection, and the 
      * given "type totals" (aggregated sums per data type).
@@ -91,9 +95,10 @@ public class SpeciesDataCollection {
      * @param dataType If provided, the generated table will include only this data type. If null, all data types will be included.
      * @param dataTypeTotals The names of the data types to aggregate data for, and their order.
      * @param excludedDataTypes The names of the data types to exclude from the table.
-     * @return 
+     * @param locationsInOrder The names of the locations to include, in order.
+     * @return Ready-to-use HTML table rows.
      */
-    public String toHtmlTableRows(CmsAgent cms, String dataType, List<String> dataTypeTotals, List<String> excludedDataTypes) {
+    public String toHtmlTableRows(CmsAgent cms, String dataType, List<String> dataTypeTotals, List<String> excludedDataTypes, List<String> locationsInOrder) {
         if (excludedDataTypes == null) {
             excludedDataTypes = new ArrayList<String>(); // Prevent NPE
         }
@@ -101,10 +106,16 @@ public class SpeciesDataCollection {
         List<String> comments = new ArrayList<String>();
         String s = "";
         
-        Iterator<String> iLocations = locations.iterator();
+        Iterator<String> iLocations = locationsInOrder != null ? locationsInOrder.iterator() : locations.iterator();
         while (iLocations.hasNext()) {
             // Get the location
             String location = iLocations.next();
+            
+            // Prevent error case (can happen when locationsInOrder is used)
+            if (!locations.contains(location)) {
+                s += "\n<-- skipping location '" + location + "' because it has no entries in this collection -->";
+                continue;
+            }
             
             // Construct the array of aggregated sums per data type + 1 for the combined total
             int[] sums = new int[dataTypeTotals.size()+1]; // E.g.: [Population] [Reproduction] [Survival] [Diet] [COMBINED TOTAL (always last)]
