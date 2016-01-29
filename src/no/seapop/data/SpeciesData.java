@@ -14,10 +14,12 @@ import org.opencms.jsp.I_CmsXmlContentContainer;
  * @author Paul-Inge Flakstad, Norwegian Polar Institute <flakstad at npolar.no>
  */
 public class SpeciesData {
+    
     /**
      * The species name.
      */
     private String name = null;
+    
     /**
      * The URI to the species file in the OpenCms virtual file system.
      */
@@ -28,11 +30,15 @@ public class SpeciesData {
     private boolean isDiving = false;
     private boolean isCoastalBound = false;
     private boolean isIceBound = false;
+    
     /**
      * The data links.
      */
     private List<SpeciesDataLink> dataLinks = null;
     
+    /**
+     * The resource type name for species data files.
+     */
     public static final String RESOURCE_TYPE_NAME = "seapop_species_data";
     
     /**
@@ -88,10 +94,15 @@ public class SpeciesData {
             
         }
     }
+    
     public boolean isPelagic() { return isPelagic; }
+    
     public boolean isCoastalBound() { return isCoastalBound; }
+    
     public boolean isSurfaceBound() { return isSurfaceBound; }
+    
     public boolean isDiving() { return isDiving; }
+    
     public boolean isIceBound() { return isIceBound; }
     
     /**
@@ -150,6 +161,7 @@ public class SpeciesData {
         
         return i;
     }
+    
     /**
      * Adds a single data link to the list of data links.
      * 
@@ -165,6 +177,7 @@ public class SpeciesData {
         this.dataLinks.add(new SpeciesDataLink(location, type, url, numYears, comment));
         return this;
     }
+    
     /**
      * Gets all data links for a given location.
      * 
@@ -186,6 +199,7 @@ public class SpeciesData {
         }
         return tmp;
     }
+    
     /**
      * Gets the list of locations for all the data links.
      * @return The list of locations for all the data links, or an empty list.
@@ -202,11 +216,13 @@ public class SpeciesData {
         }
         return tmp;
     }
+    
     /**
      * Gets the data links.
      * @return The data links, or an empty list.
      */
     public List<SpeciesDataLink> getDataLinks() { return this.dataLinks; }
+    
     /**
      * Gets the species name.
      * @return The species name.

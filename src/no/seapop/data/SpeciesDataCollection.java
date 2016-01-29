@@ -25,11 +25,11 @@ public class SpeciesDataCollection {
     private List<SpeciesData> data = null;
     
     
-    /*public SpeciesDataCollection() {
+    public SpeciesDataCollection() {
         locations = new ArrayList<String>();
         names = new ArrayList<String>();
         data = new ArrayList<SpeciesData>();
-    }*/
+    }
     
     /**
      * Creates a new collection by constructing data entries based on the 
@@ -41,10 +41,12 @@ public class SpeciesDataCollection {
      * @param cms Initialized CmsAgent.
      */
     public SpeciesDataCollection(String folder, CmsAgent cms) {
-        //this();
-        locations = new ArrayList<String>();
-        names = new ArrayList<String>();
-        data = new ArrayList<SpeciesData>();
+        this(folder, cms, null);
+        /*
+        this();
+        //locations = new ArrayList<String>();
+        //names = new ArrayList<String>();
+        //data = new ArrayList<SpeciesData>();
         try {
             CmsObject cmso = cms.getCmsObject();
             CmsResourceFilter dataFilesFilter = CmsResourceFilter.DEFAULT_FILES.addRequireType(OpenCms.getResourceManager().getResourceType(SpeciesData.RESOURCE_TYPE_NAME).getTypeId());
@@ -53,9 +55,48 @@ public class SpeciesDataCollection {
             List<CmsResource> ocmsDataFiles = cmso.readResources(folder, dataFilesFilter, false);
             Iterator<CmsResource> iOcmsDataFiles = ocmsDataFiles.iterator();
             while (iOcmsDataFiles.hasNext()) {
-                SpeciesData speciesDataEntry = new SpeciesData(cmso.getSitePath(iOcmsDataFiles.next()), cms);
-                this.add(speciesDataEntry);
-                
+                this.add(new SpeciesData(cmso.getSitePath(iOcmsDataFiles.next()), cms));
+            }            
+        } catch (Exception e) {
+            // ???
+        }
+        
+        sortByGroup();
+        //*/
+    }
+    
+    /**
+     * Creates a new collection by constructing data entries based on the 
+     * <code>seapop_species_data</code> data files found in the given folder.
+     * <p>
+     * Any resource in the given <code>excluded</code> list will be ignored.
+     * <p>
+     * After the collection has been created, it is sorted by group.
+     * 
+     * @param folder The folder to read <code>seapop_species_data</code> data files from.
+     * @param cms Initialized CmsAgent.
+     * @param excluded Resource(s) to ignore. Can be <code>null</code>.
+     */
+    public SpeciesDataCollection(String folder, CmsAgent cms, List<CmsResource> excluded) {
+        this();
+        
+        if (excluded == null) {
+            excluded = new ArrayList<CmsResource>(0);
+        }
+        
+        try {
+            CmsObject cmso = cms.getCmsObject();
+            CmsResourceFilter dataFilesFilter = CmsResourceFilter.DEFAULT_FILES.addRequireType(OpenCms.getResourceManager().getResourceType(SpeciesData.RESOURCE_TYPE_NAME).getTypeId());
+
+            // Load data files
+            List<CmsResource> ocmsDataFiles = cmso.readResources(folder, dataFilesFilter, false);
+            Iterator<CmsResource> iOcmsDataFiles = ocmsDataFiles.iterator();
+            while (iOcmsDataFiles.hasNext()) {
+                CmsResource speciesDataResource = iOcmsDataFiles.next();
+                if (!excluded.contains(speciesDataResource)) {
+                    SpeciesData speciesDataEntry = new SpeciesData(cmso.getSitePath(speciesDataResource), cms);
+                    this.add(speciesDataEntry);
+                }
             }            
         } catch (Exception e) {
             // ???
@@ -65,24 +106,29 @@ public class SpeciesDataCollection {
     }
     
     /**
-     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List) 
+     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List, java.util.List, java.util.List) 
      */
     public String toHtmlTableRows(CmsAgent cms) {
         return toHtmlTableRows(cms, null);
     }
+    
     /**
-     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List) 
+     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List, java.util.List, java.util.List) 
      */
     public String toHtmlTableRows(CmsAgent cms, String dataType) {
         return toHtmlTableRows(cms, dataType, SpeciesDataLinkType.TYPES_ORDER_DEFAULT);
     }
+    
     /**
-     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List) 
+     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List, java.util.List, java.util.List) 
      */
     public String toHtmlTableRows(CmsAgent cms, String dataType, List<String> dataTypeTotals) {
         return toHtmlTableRows(cms, dataType, dataTypeTotals, null);
     }
     
+    /**
+     * @see #toHtmlTableRows(no.npolar.util.CmsAgent, java.lang.String, java.util.List, java.util.List, java.util.List) 
+     */
     public String toHtmlTableRows(CmsAgent cms, String dataType, List<String> dataTypeTotals, List<String> excludedDataTypes) {
         return toHtmlTableRows(cms, dataType, dataTypeTotals, excludedDataTypes, null);
     }
@@ -213,6 +259,7 @@ public class SpeciesDataCollection {
         }
         
         s += "</table>\n\n";
+        
         if (dataType != null && !comments.isEmpty()) {
             s += "<div class=\"species-data-table-comments\">";
             s += "<ol>";
@@ -241,6 +288,7 @@ public class SpeciesDataCollection {
         }
         return this;
     }
+    
     /**
      * Updates the list of species names in this collection, after a data entry 
      * was added (in the {@link #add(no.seapop.data.SpeciesData)} method).
@@ -252,6 +300,7 @@ public class SpeciesDataCollection {
             names.add(speciesDataEntry.getName());
         }
     }
+    
     /**
      * Updates the list of locations in this collection, after a data entry 
      * was added (in the {@link #add(no.seapop.data.SpeciesData)} method).
@@ -266,6 +315,7 @@ public class SpeciesDataCollection {
                 locations.add(entryLocation);
         }
     }
+    
     /**
      * Sorts all entries in this collection by its group number.
      * 
